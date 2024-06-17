@@ -1,0 +1,6 @@
+[workspace]
+
+members = [
+	"mongo_lib",
+	"actix_ws"
+]
