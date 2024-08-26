@@ -1,6 +1,15 @@
 use mongo_lib::mongo;
+use actix_web::{get,HttpRequest, Result};
 
-#[actix_rt::main]
+#[get("/users/{user_id}/{friend}")] // <- define path parameters
+async fn index(req: HttpRequest) -> Result<String> {
+    let name: String = req.match_info().get("friend").unwrap().parse().unwrap();
+    let userid: i32 = req.match_info().query("user_id").parse().unwrap();
+
+    Ok(format!("Welcome {}, user_id {}!", name, userid))
+}
+
+#[actix_web::main]
 async fn main() {
     println!("Hello, world!");
 
@@ -17,7 +26,7 @@ mod tests {
     use crate::mongo;
     use crate::mongo::mongo::init_connection;
     
-    #[tokio::test]
+    #[actix_web::test]
     async fn db_connection() {
         let conn = "mongodb+srv://mdeb:Tristan2006@cluster0.ziyu4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
         let uri = conn.to_string();
