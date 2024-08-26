@@ -1,5 +1,5 @@
 use mongo_lib::mongo;
-use actix_web::{get,HttpRequest, Result};
+use actix_web::{get,HttpRequest, Result, web, App, HttpServer};
 
 #[get("/users/{user_id}/{friend}")] // <- define path parameters
 async fn index(req: HttpRequest) -> Result<String> {
@@ -10,7 +10,7 @@ async fn index(req: HttpRequest) -> Result<String> {
 }
 
 #[actix_web::main]
-async fn main() {
+async fn main() -> std::io::Result<()> {
     println!("Hello, world!");
 
     let conn = "mongodb+srv://mdeb:Tristan2006@cluster0.ziyu4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
@@ -18,6 +18,14 @@ async fn main() {
     println!("Mongo URI : {}", uri);
     let _repo = mongo::mongo::init_connection(uri).await;
 
+    HttpServer::new(|| {
+        App::new()
+            .service(index)
+            //.route("/", web::get().to(manual_hello))
+    })
+    .bind(("127.0.0.1", 8080))?
+    .run()
+    .await
 }
 
 #[cfg(test)]
